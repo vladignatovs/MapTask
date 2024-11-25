@@ -1,20 +1,20 @@
-var MapTask = (function() {
+var LKS92WGS84 = (function() {
     // Koordinatu parveidojumos izmantotas konstantes
-    MapData.PI = Math.PI;                                    // Skaitlis pi
-    MapData.A_AXIS = 6378137;                                // Elipses modela liela ass (a)
-    MapData.B_AXIS = 6356752.31414;                          // Elipses modela maza ass (b)
-    MapData.CENTRAL_MERIDIAN = MapData.PI * 24 / 180;        // Centralais meridians
-    MapData.OFFSET_X = 500000;                               // Koordinatu nobide horizontalas (x) ass virziena
-    MapData.OFFSET_Y = -6000000;                             // Koordinatu nobide vertikalas (y) ass virziena
-    MapData.SCALE = 0.9996;                                  // Kartes merogojuma faktors (reizinatajs)
+    LKS92WGS84.PI = Math.PI;                                    // Skaitlis pi
+    LKS92WGS84.A_AXIS = 6378137;                                // Elipses modela liela ass (a)
+    LKS92WGS84.B_AXIS = 6356752.31414;                          // Elipses modela maza ass (b)
+    LKS92WGS84.CENTRAL_MERIDIAN = LKS92WGS84.PI * 24 / 180;     // Centralais meridians
+    LKS92WGS84.OFFSET_X = 500000;                               // Koordinatu nobide horizontalas (x) ass virziena
+    LKS92WGS84.OFFSET_Y = -6000000;                             // Koordinatu nobide vertikalas (y) ass virziena
+    LKS92WGS84.SCALE = 0.9996;                                  // Kartes merogojuma faktors (reizinatajs)
 
-    function MapData() {}
+    function LKS92WGS84() {}
 
     // Aprekina loka garumu no ekvatora lidz dota punkta geografiskajam platumam
-    MapData.getArcLengthOfMeridian = function(phi) {
+    LKS92WGS84.getArcLengthOfMeridian = function(phi) {
         var alpha, beta, gamma, delta, epsilon, n;
-        n = (MapData.A_AXIS - MapData.B_AXIS) / (MapData.A_AXIS + MapData.B_AXIS);
-        alpha = ((MapData.A_AXIS + MapData.B_AXIS) / 2) * (1 + (Math.pow(n, 2) / 4) + (Math.pow(n, 4) / 64));
+        n = (LKS92WGS84.A_AXIS - LKS92WGS84.B_AXIS) / (LKS92WGS84.A_AXIS + LKS92WGS84.B_AXIS);
+        alpha = ((LKS92WGS84.A_AXIS + LKS92WGS84.B_AXIS) / 2) * (1 + (Math.pow(n, 2) / 4) + (Math.pow(n, 4) / 64));
         beta = (-3 * n / 2) + (9 * Math.pow(n, 3) / 16) + (-3 * Math.pow(n, 5) / 32);
         gamma = (15 * Math.pow(n, 2) / 16) + (-15 * Math.pow(n, 4) / 32);
         delta = (-35 * Math.pow(n, 3) / 48) + (105 * Math.pow(n, 5) / 256);
@@ -24,11 +24,11 @@ var MapTask = (function() {
     };
 
     // Aprekina geografisko platumu centrala meridiana punktam
-    MapData.getFootpointLatitude = function(y) {
+    LKS92WGS84.getFootpointLatitude = function(y) {
         var yd, alpha, beta, gamma, delta, epsilon, n;
 
-        n = (MapData.A_AXIS - MapData.B_AXIS) / (MapData.A_AXIS + MapData.B_AXIS);
-        alpha = ((MapData.A_AXIS + MapData.B_AXIS) / 2) * (1 + (Math.pow(n, 2) / 4) + (Math.pow(n, 4) / 64));
+        n = (LKS92WGS84.A_AXIS - LKS92WGS84.B_AXIS) / (LKS92WGS84.A_AXIS + LKS92WGS84.B_AXIS);
+        alpha = ((LKS92WGS84.A_AXIS + LKS92WGS84.B_AXIS) / 2) * (1 + (Math.pow(n, 2) / 4) + (Math.pow(n, 4) / 64));
         yd = y / alpha;
         beta = (3 * n / 2) + (-27 * Math.pow(n, 3) / 32) + (269 * Math.pow(n, 5) / 512);
         gamma = (21 * Math.pow(n, 2) / 16) + (-55 * Math.pow(n, 4) / 32);
@@ -39,14 +39,14 @@ var MapTask = (function() {
     };
 
     // Parveido punkta geografiska platuma, garuma koordinatas par x, y koordinatam (bez parvietojuma un merogojuma)
-    MapData.convertMapLatLngToXY = function(phi, lambda, lambda0) {
+    LKS92WGS84.convertMapLatLngToXY = function(phi, lambda, lambda0) {
         var N, nu2, ep2, t, t2, l,
             l3coef, l4coef, l5coef, l6coef, l7coef, l8coef,
             xy = [0, 0];
 
-        ep2 = (Math.pow(MapData.A_AXIS, 2) - Math.pow(MapData.B_AXIS, 2)) / Math.pow(MapData.B_AXIS, 2);
+        ep2 = (Math.pow(LKS92WGS84.A_AXIS, 2) - Math.pow(LKS92WGS84.B_AXIS, 2)) / Math.pow(LKS92WGS84.B_AXIS, 2);
         nu2 = ep2 * Math.pow(Math.cos(phi), 2);
-        N = Math.pow(MapData.A_AXIS, 2) / (MapData.B_AXIS * Math.sqrt(1 + nu2));
+        N = Math.pow(LKS92WGS84.A_AXIS, 2) / (LKS92WGS84.B_AXIS * Math.sqrt(1 + nu2));
         t = Math.tan(phi);
         t2 = t * t;
 
@@ -62,23 +62,23 @@ var MapTask = (function() {
         xy[0] = N * Math.cos(phi) * l + (N / 6 * Math.pow(Math.cos(phi), 3) * l3coef * Math.pow(l, 3)) + (N / 120 * Math.pow(Math.cos(phi), 5) * l5coef * Math.pow(l, 5)) + (N / 5040 * Math.pow(Math.cos(phi), 7) * l7coef * Math.pow(l, 7));
 
         // y koordinata
-        xy[1] = MapData.getArcLengthOfMeridian(phi) + (t / 2 * N * Math.pow(Math.cos(phi), 2) * Math.pow(l, 2)) + (t / 24 * N * Math.pow(Math.cos(phi), 4) * l4coef * Math.pow(l, 4)) + (t / 720 * N * Math.pow(Math.cos(phi), 6) * l6coef * Math.pow(l, 6)) + (t / 40320 * N * Math.pow(Math.cos(phi), 8) * l8coef * Math.pow(l, 8));
+        xy[1] = LKS92WGS84.getArcLengthOfMeridian(phi) + (t / 2 * N * Math.pow(Math.cos(phi), 2) * Math.pow(l, 2)) + (t / 24 * N * Math.pow(Math.cos(phi), 4) * l4coef * Math.pow(l, 4)) + (t / 720 * N * Math.pow(Math.cos(phi), 6) * l6coef * Math.pow(l, 6)) + (t / 40320 * N * Math.pow(Math.cos(phi), 8) * l8coef * Math.pow(l, 8));
 
         return xy;
     };
 
     // Parveido punkta x, y koordinatas par geografiska platuma, garuma koordinatam (bez parvietojuma un merogojuma)
-    MapData.convertMapXYToLatLon = function(x, y, lambda0) {
+    LKS92WGS84.convertMapXYToLatLon = function(x, y, lambda0) {
         var phif, Nf, Nfpow, nuf2, ep2, tf, tf2, tf4, cf,
             x1frac, x2frac, x3frac, x4frac, x5frac, x6frac, x7frac, x8frac,
             x2poly, x3poly, x4poly, x5poly, x6poly, x7poly, x8poly,
             latLng = [0, 0];
 
-        phif = MapData.getFootpointLatitude(y);
-        ep2 = (Math.pow(MapData.A_AXIS, 2) - Math.pow(MapData.B_AXIS, 2)) / Math.pow(MapData.B_AXIS, 2);
+        phif = LKS92WGS84.getFootpointLatitude(y);
+        ep2 = (Math.pow(LKS92WGS84.A_AXIS, 2) - Math.pow(LKS92WGS84.B_AXIS, 2)) / Math.pow(LKS92WGS84.B_AXIS, 2);
         cf = Math.cos(phif);
         nuf2 = ep2 * Math.pow(cf, 2);
-        Nf = Math.pow(MapData.A_AXIS, 2) / (MapData.B_AXIS * Math.sqrt(1 + nuf2));
+        Nf = Math.pow(LKS92WGS84.A_AXIS, 2) / (LKS92WGS84.B_AXIS * Math.sqrt(1 + nuf2));
         Nfpow = Nf;
 
         tf = Math.tan(phif);
@@ -126,13 +126,13 @@ var MapTask = (function() {
     };
 
     // Parveido punkta geografiska platuma, garuma koordinatas par x, y koordinatam (ar parvietojumu un merogojumu)
-    MapData.convertLatLonToXY = function(coordinates) {
-        var lat = coordinates[0] * MapData.PI / 180,
-            lng = coordinates[1] * MapData.PI / 180,
-            xy = MapData.convertMapLatLngToXY(lat, lng, MapData.CENTRAL_MERIDIAN);
+    LKS92WGS84.convertLatLonToXY = function(coordinates) {
+        var lat = coordinates[0] * LKS92WGS84.PI / 180,
+            lng = coordinates[1] * LKS92WGS84.PI / 180,
+            xy = LKS92WGS84.convertMapLatLngToXY(lat, lng, LKS92WGS84.CENTRAL_MERIDIAN);
 
-        xy[0] = xy[0] * MapData.SCALE + MapData.OFFSET_X;
-        xy[1] = xy[1] * MapData.SCALE + MapData.OFFSET_Y;
+        xy[0] = xy[0] * LKS92WGS84.SCALE + LKS92WGS84.OFFSET_X;
+        xy[1] = xy[1] * LKS92WGS84.SCALE + LKS92WGS84.OFFSET_Y;
 
         if (xy[1] < 0) {
             xy[1] += 10000000;
@@ -142,16 +142,16 @@ var MapTask = (function() {
     };
 
     // Parveido punkta x, y koordinatas par geografiska platuma, garuma koordinatam (ar parvietojumu un merogojumu)
-    MapData.convertXYToLatLon = function(coordinates) {
-        var x = (coordinates[0] - MapData.OFFSET_X) / MapData.SCALE,
-            y = (coordinates[1] - MapData.OFFSET_Y) / MapData.SCALE,
-            latLng = MapData.convertMapXYToLatLon(x, y, MapData.CENTRAL_MERIDIAN);
+    LKS92WGS84.convertXYToLatLon = function(coordinates) {
+        var x = (coordinates[0] - LKS92WGS84.OFFSET_X) / LKS92WGS84.SCALE,
+            y = (coordinates[1] - LKS92WGS84.OFFSET_Y) / LKS92WGS84.SCALE,
+            latLng = LKS92WGS84.convertMapXYToLatLon(x, y, LKS92WGS84.CENTRAL_MERIDIAN);
 
-        latLng[0] = latLng[0] / MapData.PI * 180;
-        latLng[1] = latLng[1] / MapData.PI * 180;
+        latLng[0] = latLng[0] / LKS92WGS84.PI * 180;
+        latLng[1] = latLng[1] / LKS92WGS84.PI * 180;
 
         return latLng;
     };
 
-    return MapData;
+    return LKS92WGS84;
 })();
